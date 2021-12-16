@@ -1,0 +1,28 @@
+version: '3'
+
+#
+# Descrição dos serviços
+services:
+
+  #
+  # Servidor Web
+  web-server:
+    container_name: dev-php-webserver
+    image: aeondigital/apache-php-7.4:dev
+    env_file:
+      - .env
+    volumes:
+      - .:/var/www/html
+    ports:
+      - 8080:80
+    links:
+      - db-server
+
+  #
+  # Servidor de banco de dados
+  db-server:
+    container_name: dev-php-dbserver
+    image: aeondigital/mysql-8.0:dev
+    #
+    # O comando abaixo é opcional e está aqui registrado para eventualidade de uso futuro.
+    # command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
