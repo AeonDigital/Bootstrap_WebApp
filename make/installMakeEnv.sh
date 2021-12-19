@@ -11,6 +11,7 @@ ISOK=1
 TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/myShellEnv/main/etc/skel/myShellEnv/"
 TMP_THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 TMP_TARGET_DIR="${TMP_THIS_DIR}/mseStandAlone/"
+TMP_TARGET_LOAD_SCRIPTS="${TMP_TARGET_DIR}loadScripts.sh"
 MSE_GB_INTERFACE_MSG=()
 MSE_GB_TARGET_FILES=()
 MSE_GB_ALERT_MSG=()
@@ -231,6 +232,43 @@ if [ ! -d "${TMP_TARGET_DIR}" ]; then
   alertUser
 else
 
+
+
+  echo '#!/bin/bash -eu' > "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '#' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '# Carrega os scripts' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'TMP_PATH_TO_SCRIPTS="${MK_ROOT_PATH}/make/mseStandAlone/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'TMP_TARGET_SCRIPTS=(' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  "functions/interface/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  "functions/string/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  "functions/tools/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  "management/config_files/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo ')' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'for tgtDir in "${TMP_TARGET_SCRIPTS[@]}"; do' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  tgtPath="${TMP_PATH_TO_SCRIPTS}${tgtDir}"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  tgtFiles=$(find "$tgtPath" -name "*.sh");' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  while read rawLine' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  do' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '    source "$rawLine"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '  done <<< ${tgtFiles}' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'done' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'unset tgtDir' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'unset tgtPath' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'unset tgtFiles' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'unset rawLine' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'unset TMP_PATH_TO_SCRIPTS' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+  echo 'unset TMP_TARGET_SCRIPTS' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+
+
+
   # Funções :: interface
   if [ $ISOK == 1 ]; then
     mseDir="${TMP_TARGET_DIR}functions/interface/"
@@ -300,6 +338,7 @@ unset ISOK
 unset TMP_URL_BASE
 unset TMP_THIS_DIR
 unset TMP_TARGET_DIR
+unset TMP_TARGET_LOAD_SCRIPTS
 unset MSE_GB_INTERFACE_MSG
 unset MSE_GB_TARGET_FILES
 unset MSE_GB_ALERT_MSG

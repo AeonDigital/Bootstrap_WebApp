@@ -1,44 +1,7 @@
 #!/bin/bash -eu
 
-
-
-#
-# Carrega todos os scripts base
-TMP_THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-TMP_PATH_TO_SCRIPTS="${TMP_THIS_DIR}/mseStandAlone/"
-TMP_TARGET_SCRIPTS=(
-  "functions/interface/"
-  "functions/string/"
-  "functions/tools/"
-  "management/config_files/"
-)
-
-
-for tgtDir in "${TMP_TARGET_SCRIPTS[@]}"; do
-  tgtPath="${TMP_PATH_TO_SCRIPTS}${tgtDir}"
-  tgtFiles=$(find "$tgtPath" -name "*.sh");
-
-  while read rawLine
-  do
-    source "$rawLine"
-  done <<< ${tgtFiles}
-done
-
-unset tgtDir
-unset tgtPath
-unset tgtFiles
-unset rawLine
-
-TMP_ROOT_PATH=$(dirname "${TMP_THIS_DIR}")
-
-unset TMP_THIS_DIR
-unset TMP_PATH_TO_SCRIPTS
-unset TMP_TARGET_SCRIPTS
-
-
-
-
-
+MK_ROOT_PATH=$( cd -- "$( dirname $(dirname -- "${BASH_SOURCE[0]}") )" &> /dev/null && pwd )
+source "${MK_ROOT_PATH}/make/mseStandAlone/loadScripts.sh"
 
 
 
@@ -62,7 +25,7 @@ restartEnvFile() {
     setIMessage "Ação abortada pelo usuário.";
     alertUser;
   else
-    cp "${TMP_ROOT_PATH}/make/.env" "${TMP_ROOT_PATH}/.env";
+    cp "${MK_ROOT_PATH}/make/.env" "${MK_ROOT_PATH}/.env";
   fi;
 }
 
@@ -110,9 +73,9 @@ configEnvWebServer() {
 
 
       if [ "$MSE_GB_PROMPT_RESULT" != "0" ]; then
-        mcfSetVariable "ENVIRONMENT" "${MSE_GB_PROMPT_RESULT}" "${TMP_ROOT_PATH}/.env";
-        mcfSetVariable "APACHE_RUN_USER" "${userUID}" "${TMP_ROOT_PATH}/.env";
-        mcfSetVariable "APACHE_RUN_GROUP" "${userGID}" "${TMP_ROOT_PATH}/.env";
+        mcfSetVariable "ENVIRONMENT" "${MSE_GB_PROMPT_RESULT}" "${MK_ROOT_PATH}/.env";
+        mcfSetVariable "APACHE_RUN_USER" "${userUID}" "${MK_ROOT_PATH}/.env";
+        mcfSetVariable "APACHE_RUN_GROUP" "${userGID}" "${MK_ROOT_PATH}/.env";
       fi;
     fi;
   fi;
@@ -197,7 +160,7 @@ configEnvDataBaseServer() {
         key="${EXPECTED_VAR_NAME[$index]}";
         value="${PROMPT_RESPONSE_VALUES[$index]}";
 
-        mcfSetVariable "$key" "$value" "${TMP_ROOT_PATH}/.env";
+        mcfSetVariable "$key" "$value" "${MK_ROOT_PATH}/.env";
       done
     fi;
   fi;
