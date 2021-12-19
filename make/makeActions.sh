@@ -103,16 +103,17 @@ configEnvDataBaseServer() {
     local EXPECTED_VAR_NAME=(
       "DATABASE_TYPE" "DATABASE_HOST" "DATABASE_PORT"
       "DATABASE_NAME" "DATABASE_USER" "DATABASE_PASS"
+      "DATABASE_CA_PATH"
     );
 
     local PROMPT_CONTEXT_MESSAGE="Banco de Dados:";
     local PROMPT_MESSAGE="Informe o ${PURPLE}[[VAR_LABEL]]${NONE}";
     local PROMPT_ERROR_REQUIRED="${PURPLE}[[VAR_LABEL]]${NONE} é obrigatório. Ação abortada.";
     local PROMPT_REQUEST_VAR_LABEL=(
-      "TYPE" "HOST" "PORT" "DATABASE_NAME" "USER" "PASSWORD"
+      "TYPE" "HOST" "PORT" "DATABASE_NAME" "USER" "PASSWORD" "CA_PATH"
     );
     local PROMPT_REQUEST_VAR_REQUIRED=(
-      "1", "1" "1" "1" "1" "1"
+      "1" "1" "1" "1" "1" "1" "0"
     );
     local PROMPT_RESPONSE_VALUES=();
 
@@ -122,9 +123,7 @@ configEnvDataBaseServer() {
 
       if [ "${ISOK}" == "1" ]; then
         local pLabel="${PROMPT_REQUEST_VAR_LABEL[$index]}";
-        local pMessage=$(sed 's/\[\[VAR_LABEL\]\]/'"${pLabel}"'/' <<< "$PROMPT_MESSAGE");
         local pRequired="${PROMPT_REQUEST_VAR_REQUIRED[$index]}";
-
 
         local pType="value";
         if [ "$pLabel" == "TYPE" ]; then
@@ -132,6 +131,11 @@ configEnvDataBaseServer() {
           MSE_GB_PROMPT_LIST_OPTIONS_LABELS=("mysql" "postgresql");
           MSE_GB_PROMPT_LIST_OPTIONS_VALUES=("mysql" "postgresql");
         fi
+
+        if [ "${pRequired}" == "1" ]; then
+          pLabel="${pLabel} [obrigatório]";
+        fi;
+        local pMessage=$(sed 's/\[\[VAR_LABEL\]\]/'"${pLabel}"'/' <<< "$PROMPT_MESSAGE");
 
 
         setIMessage "" 1;
@@ -162,6 +166,68 @@ configEnvDataBaseServer() {
 
         mcfSetVariable "$key" "$value" "${MK_ROOT_PATH}/.env";
       done;
+    fi;
+  fi;
+}
+
+
+
+
+#
+# Reconfigura totalmente o arquivo 'docker-compose.yaml'
+#
+configDockerCompose() {
+  setIMessage "" 1;
+  setIMessage "${LPURPLE}Iniciando configuração do Docker Compose${NONE}";
+  setIMessage "Todas as informações existentes no documento atual serão perdidas.";
+  setIMessage "Você confirma esta ação?";
+  promptUser;
+
+  if [ "$MSE_GB_PROMPT_RESULT" != "1" ]; then
+    setIMessage "" 1;
+    setIMessage "Ação abortada pelo usuário.";
+    alertUser;
+  else
+    local TMP_TARGET_DOCKER_COMPOSE="${MK_ROOT_PATH}/docker-compose.yaml"
+    local addWebServer="0";
+    local addDBServer="0";
+
+    setIMessage "" 1;
+    setIMessage "Adicionar ${LPURPLE}WEB SERVER${NONE}";
+    promptUser;
+
+    addWebServer=$MSE_GB_PROMPT_RESULT
+
+
+
+    setIMessage "" 1;
+    setIMessage "Adicionar ${LPURPLE}DATABASE SERVER${NONE}";
+    promptUser;
+
+    addDBServer=$MSE_GB_PROMPT_RESULT
+
+    rm -f "$TMP_TARGET_DOCKER_COMPOSE";
+
+    if [ "${addWebServer}" == 1 ] || [ "${addDBServer}" == 1 ]; then
+      
+
+      echo 'version: '3'' > "$TMP_TARGET_DOCKER_COMPOSE"
+      echo '' >>  "$TMP_TARGET_DOCKER_COMPOSE"
+      echo '' >>  "$TMP_TARGET_DOCKER_COMPOSE"
+      echo '' >>  "$TMP_TARGET_DOCKER_COMPOSE"
+      echo '#' >>  "$TMP_TARGET_DOCKER_COMPOSE"
+      echo '# Descrição dos serviços' >>  "$TMP_TARGET_DOCKER_COMPOSE"
+      echo 'services:' >>  "$TMP_TARGET_DOCKER_COMPOSE"
+
+
+      if [ "${addWebServer}" == 1 ]; then
+        cat "${MK_ROOT_PATH}/make/dockerCompose/webserver.yaml" >> "$TMP_TARGET_DOCKER_COMPOSE"
+      fi;
+      
+      if [ "${addDBServer}" == 1 ]; then
+        cat "${MK_ROOT_PATH}/make/dockerCompose/dbserver.yaml" >> "$TMP_TARGET_DOCKER_COMPOSE"
+      fi;
+
     fi;
   fi;
 }

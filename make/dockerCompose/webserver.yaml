@@ -1,0 +1,15 @@
+  
+  
+  #
+  # Servidor Web
+  web-server:
+    container_name: dev-php-webserver
+    image: aeondigital/apache-php-7.4:dev
+    env_file:
+      - .env
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - 8080:80
+    links:
+      - db-server

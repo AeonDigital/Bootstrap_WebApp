@@ -2,9 +2,14 @@
 # Aeon Digital
 # Rianna Cantarelli <rianna@aeondigital.com.br>
 #
-include .env
 .SILENT:
 
+
+
+
+CONTAINER_WEBSERVER_NAME="dev-php-webserver"
+CONTAINER_DBSERVER_NAME="dev-php-dbserver"
+GIT_LOG_LENGTH="10"
 
 
 
@@ -18,6 +23,7 @@ config:
 	make/makeActions.sh restartEnvFile
 	make/makeActions.sh configEnvWebServer
 	make/makeActions.sh configEnvDataBaseServer
+	make/makeActions.sh configDockerCompose
 
 #
 # Reinicia o arquivo de configuração a partir do template.
@@ -34,6 +40,11 @@ config-web:
 # Efetua a configuração do banco de dados.
 config-db:
 	make/makeActions.sh configEnvDataBaseServer
+
+#
+# Efetua a configuração do arquivo docker-compose
+config-docker-compose:
+	make/makeActions.sh configDockerCompose
 
 
 

@@ -1,0 +1,7 @@
+  
+  
+  #
+  # Servidor de banco de dados
+  db-server:
+    container_name: dev-php-dbserver
+    image: aeondigital/mysql-8.0:dev
