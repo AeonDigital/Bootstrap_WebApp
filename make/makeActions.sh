@@ -124,6 +124,7 @@ configEnvDataBaseServer() {
       if [ "${ISOK}" == "1" ]; then
         local pLabel="${PROMPT_REQUEST_VAR_LABEL[$index]}";
         local pRequired="${PROMPT_REQUEST_VAR_REQUIRED[$index]}";
+        local pMessage=$(sed 's/\[\[VAR_LABEL\]\]/'"${pLabel}"'/' <<< "$PROMPT_MESSAGE");
 
         local pType="value";
         if [ "$pLabel" == "TYPE" ]; then
@@ -133,9 +134,9 @@ configEnvDataBaseServer() {
         fi
 
         if [ "${pRequired}" == "1" ]; then
-          pLabel="${pLabel} [obrigatório]";
+          pMessage=$(sed 's/\[\[VAR_LABEL\]\]/'"${pLabel} [obrigatório]"'/' <<< "$PROMPT_MESSAGE");
         fi;
-        local pMessage=$(sed 's/\[\[VAR_LABEL\]\]/'"${pLabel}"'/' <<< "$PROMPT_MESSAGE");
+        
 
 
         setIMessage "" 1;

@@ -219,7 +219,7 @@ promptUser() {
             done
           else
               MSE_GB_PROMPT_RESULT=$msePromptValue
-              break;
+              break
           fi
         done
 

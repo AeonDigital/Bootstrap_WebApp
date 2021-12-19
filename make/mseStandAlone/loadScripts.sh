@@ -9,7 +9,6 @@ TMP_PATH_TO_SCRIPTS="${MK_ROOT_PATH}/make/mseStandAlone/"
 TMP_TARGET_SCRIPTS=(
   "functions/interface/"
   "functions/string/"
-  "functions/tools/"
   "management/config_files/"
 )
 

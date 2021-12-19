@@ -245,7 +245,6 @@ else
   echo 'TMP_TARGET_SCRIPTS=(' >>  "$TMP_TARGET_LOAD_SCRIPTS"
   echo '  "functions/interface/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
   echo '  "functions/string/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  "functions/tools/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
   echo '  "management/config_files/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
   echo ')' >>  "$TMP_TARGET_LOAD_SCRIPTS"
   echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
@@ -289,22 +288,6 @@ else
     MSE_GB_TARGET_FILES=(
       "toLowerCase.sh" "toUpperCase.sh"
       "trim.sh" "trimD.sh" "trimDL.sh" "trimDR.sh" "trimL.sh" "trimR.sh"
-    )
-
-    downloadMyShellEnvFiles "$mseURL" "$mseDir"
-  fi
-
-
-  # Funções :: tools
-  if [ $ISOK == 1 ]; then
-    mseDir="${TMP_TARGET_DIR}functions/tools/"
-    mseURL="${TMP_URL_BASE}functions/tools/"
-    MSE_GB_TARGET_FILES=(
-      "convertCharToDecimal.sh" "convertCharToHex.sh" "convertCharToOctal.sh"
-      "convertDecimalToChar.sh" "convertDecimalToHex.sh" "convertDecimalToOctal.sh"
-      "convertHexToChar.sh" "convertHexToDecimal.sh" "convertHexToOctal.sh"
-      "convertOctalToChar.sh" "convertOctalToDecimal.sh" "convertOctalToHex.sh"
-      "hasValueInArray.sh"
     )
 
     downloadMyShellEnvFiles "$mseURL" "$mseDir"
