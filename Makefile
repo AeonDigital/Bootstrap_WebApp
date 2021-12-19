@@ -239,25 +239,25 @@ tag:
 #
 # Redefine a tag atualmente vigente para o commit mais recente
 tag-remark:
-	make/Make.sh gitTagManagement "remark"
+	make/makeActions.sh gitTagManagement "remark"
 
 #
 # Atualiza o 'patch' da tag atualmente definida
 # para a branch principal 'main'.
 tag-update:
-	make/Make.sh gitTagManagement "version" "patch"
+	make/makeActions.sh gitTagManagement "version" "patch"
 
 #
 # Atualiza o 'minor version'  da tag atualmente definida
 # para a branch principal 'main'.
 tag-update-minor:
-	make/Make.sh gitTagManagement "version" "minor"
+	make/makeActions.sh gitTagManagement "version" "minor"
 
 #
 # Atualiza o 'major version'  da tag atualmente definida
 # para a branch principal 'main'.
 tag-update-major:
-	make/Make.sh gitTagManagement "version" "major"
+	make/makeActions.sh gitTagManagement "version" "major"
 
 #
 # Atualiza a 'stability' da tag atualmente definida
@@ -266,4 +266,4 @@ tag-update-major:
 # Use o parametro 'stability' para indicar qual será a nova 'stability'.
 # use apenas um dos seguintes valores: 'alpha'; 'beta'; 'cr'; 'r'
 tag-stability:
-	make/Make.sh gitTagManagement "stability" "${stability}"
+	make/makeActions.sh gitTagManagement "stability" "${stability}"
