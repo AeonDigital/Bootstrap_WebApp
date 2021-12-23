@@ -9,47 +9,18 @@
 
 CONTAINER_WEBSERVER_NAME="dev-php-webserver"
 CONTAINER_DBSERVER_NAME="dev-php-dbserver"
-GIT_LOG_LENGTH="10"
 
 
 
-
-
-
-
-#
-# Efetua a configuração total do ambiente.
-config:
-	make/makeActions.sh restartEnvFile
-	make/makeActions.sh configEnvWebServer
-	make/makeActions.sh configEnvDataBaseServer
-	make/makeActions.sh configDockerCompose
-
-#
-# Reinicia o arquivo de configuração a partir do template.
-# Todos os valores previamente definidos serão perdidos.
-config-restart-env:
-	make/makeActions.sh restartEnvFile
-
-#
-# Efetua a configuração do webserver.
-config-web:
-	make/makeActions.sh configEnvWebServer
-
-#
-# Efetua a configuração do banco de dados.
-config-db:
-	make/makeActions.sh configEnvDataBaseServer
-
-#
-# Efetua a configuração do arquivo docker-compose
-config-docker-compose:
-	make/makeActions.sh configDockerCompose
 
 
 
 
 
+#
+# Redefine a configuração do ambiente.
+env-config:
+	make/makeActions.sh restartEnvConfig
 
 
 
@@ -72,17 +43,13 @@ down:
 	docker-compose down --remove-orphans
 
 #
-# Entra no bash principal do projeto
-# Use o parametro 'cont' para indicar em qual container deseja entrar.
+# Entra no bash do container principal do projeto
+#
+# Informe um parametro 'cont' para indicar em qual container deseja entrar.
 #   Valores aceitos são: web|db
-#	Se nenhum valor for informado, entrará no 'web'
+#   Se nenhum valor for informado, entrará no 'web'
 bash:
-	if [ "${CONTAINER_WEBSERVER_NAME}" != "" ] && [ -z "${cont}" ] || [ "${cont}" = "web" ]; then \
-		docker exec -it ${CONTAINER_WEBSERVER_NAME} /bin/bash; \
-	fi;
-	if [ "${CONTAINER_DBSERVER_NAME}" != "" ] && [ "${cont}" = "db" ]; then \
-		docker exec -it ${CONTAINER_DBSERVER_NAME} /bin/bash; \
-	fi;
+	make/makeActions.sh openContainerBash "${MAKECMDGOALS}"
 
 
 
@@ -101,16 +68,9 @@ composer-update:
 	docker exec -it ${CONTAINER_WEBSERVER_NAME} composer update --prefer-source
 
 #
-# Retorna o IP da rede usado pelo container
+# Retorna o IP da rede usado pelos containers
 get-ip:
-	if [ "${CONTAINER_WEBSERVER_NAME}" != "" ]; then \
-		printf "Web-Server : "; \
-		docker inspect ${CONTAINER_WEBSERVER_NAME} | grep -oP -m1 '(?<="IPAddress": ")[a-f0-9.:]+'; \
-	fi;
-	if [ "${CONTAINER_DBSERVER_NAME}" != "" ]; then \
-		printf "DB-Server  : "; \
-		docker inspect ${CONTAINER_DBSERVER_NAME} | grep -oP -m1 '(?<="IPAddress": ")[a-f0-9.:]+'; \
-	fi;
+	make/makeActions.sh getContainersIP
 
 
 
@@ -129,15 +89,7 @@ get-ip:
 # > make test file="path/to/tgtFile.php"
 # > make test file="path/to/tgtFile.php" method="tgtMethodName"
 test:
-	if [ -z "${file}" ]; then \
-		docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --configuration "tests/phpunit.xml" --colors=always --verbose --debug; \
-	else \
-		if [ -z "${method}" ]; then \
-			docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit "tests/src/${file}" --colors=always --verbose --debug; \
-		else \
-			docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --filter "::${method}$$" "tests/src/${file}" --colors=always --verbose --debug; \
-		fi; \
-	fi
+	make/makeActions.sh performUnitTests "${MAKECMDGOALS}"
 
 
 
@@ -160,27 +112,7 @@ test:
 # > make test-cover output="html"
 # > make test-cover file="path/to/tgtFile.php" output="html"
 test-cover:
-	if [ -z "${file}" ] && [ -z "${output}" ]; then \
-		docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --configuration "tests/phpunit.xml" --colors=always --coverage-text; \
-	else \
-		if [ -z "${file}" ]; then \
-			if [ -z "${output}" ] || [ "${output}" = "text" ]; then \
-				docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --configuration "tests/phpunit.xml" --colors=always --coverage-text; \
-			elif [ "${output}" = "html" ]; then \
-				docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --configuration "tests/phpunit.xml" --colors=always --coverage-html "tests/cover"; \
-			else \
-				echo "Parametro 'output' inválido. Use apenas 'text' ou 'html'."; \
-			fi; \
-		else \
-			if [ -z "${output}" ] || [ "${output}" = "text" ]; then \
-				docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit "tests/src/${file}" --whitelist="tests/src/${file}" --colors=always --coverage-text; \
-			elif [ "${output}" = "html" ]; then \
-				docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit "tests/src/${file}" --whitelist="tests/src/${file}" --coverage-html "tests/cover-file"; \
-			else \
-				echo "Parametro 'output' inválido. Use apenas 'text' ou 'html'."; \
-			fi; \
-		fi; \
-	fi
+	make/makeActions.sh performUnitCoverTests "${MAKECMDGOALS}"
 
 
 
@@ -190,19 +122,9 @@ test-cover:
 # Configura a classe de extração de documentação técnica
 # Este comando precisa ser rodado apenas 1 vez para cada novo container e apenas
 # se o arquivo de configuração ainda não existir.
-#
-# Use o parametro 'force' com o valor 'true' para executar e sobrescrever configurações
-# atualmente existentes.
-#
-# > make docs-config
-# > make docs-config force="true"
 docs-config:
-	if [ ! -f "vendor/aeondigital/phpdoc-to-rst/src/_static/conf.py" ] || [ "${force}" = "true" ]; then \
-		docker exec -it ${CONTAINER_WEBSERVER_NAME} mkdir -p docs; \
-		docker exec -it ${CONTAINER_WEBSERVER_NAME} ./vendor/bin/phpdoc-to-rst config; \
-	else \
-		echo "Configuração para documentação já existe"; \
-	fi;
+	docker exec -it ${CONTAINER_WEBSERVER_NAME} mkdir -p docs;
+	docker exec -it ${CONTAINER_WEBSERVER_NAME} ./vendor/bin/phpdoc-to-rst config;
 
 #
 # Efetua a extração da documentação técnica para o formato 'rst'.
@@ -216,23 +138,8 @@ docs-extract:
 #
 # Mostra log resumido do git
 # Use o parametro 'len' para indicar a quantidade de itens a serem mostrados.
-#
-# O workaround abaixo se deve ao fato que o operador <<< não funciona em condições
-# normais do 'Makefile' mesmo quando é setado SHELL=/bin/bash.
-# O comando abaixo deveria ser apenas 1 linha como a seguinte:
-# column -e -t -s "|" <<< $(git log -3 --pretty='format:%ad | %s' --reverse --date=format:'%d %B | %H:%M')
-#
 git-log:
-	if [ -z "${len}" ]; then \
-		git log -${GIT_LOG_LENGTH} --pretty='format:%ad | %s' --reverse --date=format:'%d %B | %H:%M' > .tmplogdata; \
-	else \
-		git log -${len} --pretty='format:%ad | %s' --reverse --date=format:'%d %B | %H:%M' > .tmplogdata; \
-	fi;
-	# Sem esta linha extra o comando 'column' apresenta um erro de 'line too long'
-	echo "" >> .tmplogdata
-	column .tmplogdata -e -t -s "|"
-	rm .tmplogdata
-
+	make/makeActions.sh gitShowLog "${MAKECMDGOALS}"
 
 
 
