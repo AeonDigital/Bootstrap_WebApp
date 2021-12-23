@@ -1,0 +1,7 @@
+# Arquivos e Diretórios que devem ser ignorados pelo git
+docs/rest
+docs/html
+tests/cover*
+tests/.phpunit*
+vendor
+composer.lock
