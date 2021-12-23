@@ -41,14 +41,15 @@ restartEnvConfig() {
 
     if [ "$MSE_GB_PROMPT_RESULT" != "0" ]; then
       local userName=$(whoami);
+      local userHash="#";
       local userUID=$(id -u ${userName});
       local userGID=$(id -g ${userName});
 
       cp "${MK_ROOT_PATH}/make/.env" "${MK_WEB_SERVER_ENV_FILE}";
 
       mcfSetVariable "ENVIRONMENT" "${MSE_GB_PROMPT_RESULT}" "${MK_WEB_SERVER_ENV_FILE}";
-      mcfSetVariable "APACHE_RUN_USER" "${userUID}" "${MK_WEB_SERVER_ENV_FILE}";
-      mcfSetVariable "APACHE_RUN_GROUP" "${userGID}" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "APACHE_RUN_USER" "${userHash}${userUID}" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "APACHE_RUN_GROUP" "${userHash}${userGID}" "${MK_WEB_SERVER_ENV_FILE}";
     fi;
   fi;
 }
