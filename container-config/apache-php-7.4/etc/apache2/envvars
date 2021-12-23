@@ -1,0 +1,51 @@
+# envvars - default environment variables for apache2ctl
+
+
+#
+# Este arquivo foi adequado para uso em um container Docker
+# Comentários e as configurações para permitir rodar inúmeras
+# instâncias foram removidas.
+# Uma versão original do mesmo foi mantida no repositório deste
+# projeto 
+
+unset HOME
+
+export LANG=C
+export LANG
+
+export APACHE_PID_FILE=/var/run/apache2/apache2.pid
+export APACHE_RUN_DIR=/var/run/apache2
+export APACHE_LOCK_DIR=/var/lock/apache2
+export APACHE_LOG_DIR=/var/log/apache2
+
+
+
+#
+# Verifica se deve usar os valor padrão de cada uma das variáveis de
+# ambiente. Preservará o valor de cada variável esperada quando esta
+# já estiver definida no ambiente (geralmente pelo uso de um 'env_file'
+# no docker-composer).
+#
+# Para cada linha do arquivo de configuração padrão
+while read rawLine; do
+  # não sendo uma linha vazia
+  if [ "${rawLine}" != "" ]; then
+    fChar=${rawLine%"${rawLine#?}"}
+
+    # não sendo uma linha de comentário
+    if [ "${fChar}" != "#" ]; then
+      key=$(echo "${rawLine}" | cut -d "=" -f1)
+      value=$(echo "${rawLine}" | cut -d "=" -f2)
+
+      #
+      # Verifica se o valor para a atual variável já está
+      # definida entre as variáveis de ambiente.
+      # Se NÃO estiver definida, usará o valor padrão do arquivo
+      # de configuração.
+      eval "envKeyValue=\${$key}"
+      if [ "${envKeyValue}" = "" ] && [ "$value" != "" ]; then
+        eval "export ${key}=${value}"
+      fi
+    fi
+  fi
+done < "/etc/.env"
