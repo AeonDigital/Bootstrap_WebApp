@@ -145,10 +145,6 @@ git-log:
 
 
 
-
-
-
-
 #
 # Mostra qual a tag atual do projeto.
 tag:
