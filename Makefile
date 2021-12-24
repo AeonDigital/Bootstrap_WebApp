@@ -20,8 +20,13 @@ CONTAINER_DBSERVER_NAME="dev-php-dbserver"
 #
 # Redefine a configuração do ambiente.
 env-config:
+	find make/* -name "*.sh" -exec chmod u+x {} \;
 	make/makeActions.sh restartEnvConfig
 
+#
+# Redefine a configuração de acesso ao banco de dados
+env-config-db:
+	make/makeActions.sh configEnvDataBaseServer
 
 
 

@@ -7,17 +7,6 @@
 
 
 
-ISOK=1
-TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/myShellEnv/main/etc/skel/myShellEnv/"
-TMP_THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-TMP_TARGET_DIR="${TMP_THIS_DIR}/mseStandAlone/"
-TMP_TARGET_LOAD_SCRIPTS="${TMP_TARGET_DIR}loadScripts.sh"
-MSE_GB_INTERFACE_MSG=()
-MSE_GB_TARGET_FILES=()
-MSE_GB_ALERT_MSG=()
-MSE_GB_ALERT_INDENT="    "
-
-
 #
 # Abaixo há variáveis que carregam as definição de cada uma das cores de
 # fonte já preparadas para serem usadas em mensagens de texto de forma imediata.
@@ -51,6 +40,14 @@ LPURPLE='\e[0;37;95m'
 CYAN='\e[0;37;36m'
 LCYAN='\e[0;37;96m'
 
+
+
+
+
+MSE_GB_INTERFACE_MSG=()
+MSE_GB_TARGET_FILES=()
+MSE_GB_ALERT_MSG=()
+MSE_GB_ALERT_INDENT="    "
 
 
 #
@@ -221,97 +218,224 @@ downloadMyShellEnvFiles() {
 
 
 
-#
-# Cria o diretório onde os scripts serão armazenados
-rm -rf "${TMP_TARGET_DIR}"
-mkdir -p "${TMP_TARGET_DIR}"
-if [ ! -d "${TMP_TARGET_DIR}" ]; then
+
+
+
+
+ISOK=1
+TMP_THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+TMP_ROOT_DIR=$(echo dirname -- "${TMP_THIS_DIR}" )
+if [ $# == 0 ]; then
   setIMessage "" 1
-  setIMessage "Não foi possível criar o diretório ${WHITE}mseStandAlone${NONE}"
-  setIMessage "Nenhuma ação foi executada."
+  setIMessage "${LPURPLE}Make Env BootStrap${NONE}"
+  setIMessage "Deseja prosseguir com a instalação?"
+  promptUser
+
+  if [ "$MSE_GB_PROMPT_RESULT" != "1" ]; then
+    ISOK=0
+  fi;
+fi;
+
+
+
+
+
+if [ "$ISOK" == "1" ]; then
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Confirme a instalação do componente:${NONE}"
+  setIMessage "- Makefile"
+  promptUser
+
+  if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+    tgtDir="${TMP_ROOT_DIR}/"
+    tgtURL="${TMP_URL_BASE}/"
+    MSE_GB_TARGET_FILES=(
+      "Makefile"
+    )
+
+    downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+  fi;
+
+
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Confirme a instalação do componente:${NONE}"
+  setIMessage "- docker-compose.yaml"
+  promptUser
+
+  if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+    tgtDir="${TMP_ROOT_DIR}/"
+    tgtURL="${TMP_URL_BASE}/"
+    MSE_GB_TARGET_FILES=(
+      "docker-compose.yaml"
+    )
+
+    downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+  fi;
+
+
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Confirme a instalação do componente:${NONE}"
+  setIMessage "- .gitattributes"
+  promptUser
+
+  if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+    tgtDir="${TMP_ROOT_DIR}/"
+    tgtURL="${TMP_URL_BASE}/"
+    MSE_GB_TARGET_FILES=(
+      ".gitattributes"
+    )
+
+    downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+  fi;
+
+
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Confirme a instalação do componente:${NONE}"
+  setIMessage "- make/.env"
+  promptUser
+
+  if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+    tgtDir="${TMP_ROOT_DIR}/make/"
+    tgtURL="${TMP_URL_BASE}/make/"
+    MSE_GB_TARGET_FILES=(
+      ".env"
+    )
+
+    downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+  fi;
+
+
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Confirme a instalação do componente:${NONE}"
+  setIMessage "- myEnvShell standAlone"
+  promptUser
+
+  if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/myShellEnv/main/etc/skel/myShellEnv/"
+    TMP_TARGET_DIR="${TMP_THIS_DIR}/mseStandAlone/"
+    TMP_TARGET_LOAD_SCRIPTS="${TMP_TARGET_DIR}loadScripts.sh"
+
+    # recria o diretório onde os scripts serão armazenados
+    rm -rf "${TMP_TARGET_DIR}"
+    mkdir -p "${TMP_TARGET_DIR}"
+    if [ ! -d "${TMP_TARGET_DIR}" ]; then
+      setIMessage "" 1
+      setIMessage "Não foi possível criar o diretório ${LPURPLE}mseStandAlone${NONE}"
+      setIMessage "Esta ação foi abortada."
+      alertUser
+    else
+
+
+      echo '#!/bin/bash -eu' > "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '#' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '# Carrega os scripts' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'TMP_PATH_TO_SCRIPTS="${MK_ROOT_PATH}/make/mseStandAlone/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'TMP_TARGET_SCRIPTS=(' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  "functions/interface/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  "functions/string/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  "management/config_files/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo ')' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'for tgtDir in "${TMP_TARGET_SCRIPTS[@]}"; do' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  tgtPath="${TMP_PATH_TO_SCRIPTS}${tgtDir}"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  tgtFiles=$(find "$tgtPath" -name "*.sh");' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  while read rawLine' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  do' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '    source "$rawLine"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '  done <<< ${tgtFiles}' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'done' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'unset tgtDir' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'unset tgtPath' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'unset tgtFiles' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'unset rawLine' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'unset TMP_PATH_TO_SCRIPTS' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+      echo 'unset TMP_TARGET_SCRIPTS' >>  "$TMP_TARGET_LOAD_SCRIPTS"
+
+
+
+      # Funções :: interface
+      if [ $ISOK == 1 ]; then
+        tgtDir="${TMP_TARGET_DIR}functions/interface/"
+        tgtURL="${TMP_URL_BASE}functions/interface/"
+        MSE_GB_TARGET_FILES=(
+          "alertUser.sh" "aliases.sh" "errorAlert.sh" "promptUser.sh"
+          "setIMessage.sh" "textColors.sh" "waitUser.sh"
+        )
+
+        downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+      fi
+
+
+      # Funções :: string
+      if [ $ISOK == 1 ]; then
+        tgtDir="${TMP_TARGET_DIR}functions/string/"
+        tgtURL="${TMP_URL_BASE}functions/string/"
+        MSE_GB_TARGET_FILES=(
+          "toLowerCase.sh" "toUpperCase.sh"
+          "trim.sh" "trimD.sh" "trimDL.sh" "trimDR.sh" "trimL.sh" "trimR.sh"
+        )
+
+        downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+      fi
+
+
+      # Gerenciamento :: configuração
+      if [ $ISOK == 1 ]; then
+        tgtDir="${TMP_TARGET_DIR}management/config_files/"
+        tgtURL="${TMP_URL_BASE}management/config_files/"
+        MSE_GB_TARGET_FILES=(
+          "mcfCommentSectionVariable.sh" "mcfCommentVariable.sh" "mcfPrintSectionVariable.sh"
+          "mcfPrintSectionVariableInfo.sh" "mcfPrintSectionVariables.sh" "mcfPrintSectionVariableValue.sh"
+          "mcfPrintVariable.sh" "mcfPrintVariableInfo.sh" "mcfPrintVariables.sh"
+          "mcfPrintVariableValue.sh" "mcfSetArrayValues.sh" "mcfSetSectionVariable.sh"
+          "mcfSetVariable.sh" "mcfUncommentSectionVariable.sh" "mcfUncommentVariable.sh"
+        )
+
+        downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+      fi
+    fi;
+
+
+    unset TMP_TARGET_DIR
+    unset TMP_TARGET_LOAD_SCRIPTS
+  fi;
+
+
+
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Instalando componente de update${NONE}"
   alertUser
-else
+
+  TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+  tgtDir="${TMP_ROOT_DIR}/"
+  tgtURL="${TMP_URL_BASE}/"
+  MSE_GB_TARGET_FILES=(
+    "Makefile"
+  )
+
+  downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
 
 
-
-  echo '#!/bin/bash -eu' > "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '#' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '# Carrega os scripts' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'TMP_PATH_TO_SCRIPTS="${MK_ROOT_PATH}/make/mseStandAlone/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'TMP_TARGET_SCRIPTS=(' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  "functions/interface/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  "functions/string/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  "management/config_files/"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo ')' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'for tgtDir in "${TMP_TARGET_SCRIPTS[@]}"; do' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  tgtPath="${TMP_PATH_TO_SCRIPTS}${tgtDir}"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  tgtFiles=$(find "$tgtPath" -name "*.sh");' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  while read rawLine' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  do' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '    source "$rawLine"' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '  done <<< ${tgtFiles}' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'done' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'unset tgtDir' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'unset tgtPath' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'unset tgtFiles' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'unset rawLine' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo '' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'unset TMP_PATH_TO_SCRIPTS' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-  echo 'unset TMP_TARGET_SCRIPTS' >>  "$TMP_TARGET_LOAD_SCRIPTS"
-
-
-
-  # Funções :: interface
-  if [ $ISOK == 1 ]; then
-    mseDir="${TMP_TARGET_DIR}functions/interface/"
-    mseURL="${TMP_URL_BASE}functions/interface/"
-    MSE_GB_TARGET_FILES=(
-      "alertUser.sh" "aliases.sh" "errorAlert.sh" "promptUser.sh"
-      "setIMessage.sh" "textColors.sh" "waitUser.sh"
-    )
-
-    downloadMyShellEnvFiles "$mseURL" "$mseDir"
-  fi
-
-
-  # Funções :: string
-  if [ $ISOK == 1 ]; then
-    mseDir="${TMP_TARGET_DIR}functions/string/"
-    mseURL="${TMP_URL_BASE}functions/string/"
-    MSE_GB_TARGET_FILES=(
-      "toLowerCase.sh" "toUpperCase.sh"
-      "trim.sh" "trimD.sh" "trimDL.sh" "trimDR.sh" "trimL.sh" "trimR.sh"
-    )
-
-    downloadMyShellEnvFiles "$mseURL" "$mseDir"
-  fi
-
-
-  # Gerenciamento :: configuração
-  if [ $ISOK == 1 ]; then
-    mseDir="${TMP_TARGET_DIR}management/config_files/"
-    mseURL="${TMP_URL_BASE}management/config_files/"
-    MSE_GB_TARGET_FILES=(
-      "mcfCommentSectionVariable.sh" "mcfCommentVariable.sh" "mcfPrintSectionVariable.sh"
-      "mcfPrintSectionVariableInfo.sh" "mcfPrintSectionVariables.sh" "mcfPrintSectionVariableValue.sh"
-      "mcfPrintVariable.sh" "mcfPrintVariableInfo.sh" "mcfPrintVariables.sh"
-      "mcfPrintVariableValue.sh" "mcfSetArrayValues.sh" "mcfSetSectionVariable.sh"
-      "mcfSetVariable.sh" "mcfUncommentSectionVariable.sh" "mcfUncommentVariable.sh"
-    )
-
-    downloadMyShellEnvFiles "$mseURL" "$mseDir"
-  fi
-fi
-
-
-
+  unset tgtDir
+  unset tgtURL
+fi;
 
 
 
@@ -320,16 +444,13 @@ fi
 unset ISOK
 unset TMP_URL_BASE
 unset TMP_THIS_DIR
-unset TMP_TARGET_DIR
-unset TMP_TARGET_LOAD_SCRIPTS
+
 unset MSE_GB_INTERFACE_MSG
 unset MSE_GB_TARGET_FILES
 unset MSE_GB_ALERT_MSG
 unset MSE_GB_ALERT_INDENT
 
-unset mseDir
-unset mseURL
-
+unset setIMessage
 unset alertUser
 unset errorAlert
 unset downloadMyShellEnvFiles
