@@ -481,6 +481,16 @@ if [ "$ISOK" == "1" ]; then
     )
 
     downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+
+
+    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+    tgtDir="${TMP_ROOT_DIR}/make/"
+    tgtURL="${TMP_URL_BASE}make/"
+    MSE_GB_TARGET_FILES=(
+      "makeActions.sh"
+    )
+
+    downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
   fi;
 
 
