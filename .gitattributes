@@ -1,3 +1,18 @@
+#
+# Configuração de EOL para arquivos de texto
+# use os comandos abaixo para forçar a normalização dos documentos
+# em seu repositório local
+# > git add --renormalize .
+# > git commit -m "EOL"
+# > git rm --cached -r .
+# > git reset --hard
+* text=auto eol=lf
+
+
+
+#
+# Diretórios e arquivos que não são essenciais para rodar o projeto
+# e podem ser ignorados em uma instalação em produção.
 /container-config export-ignore
 /docs export-ignore
 /make export-ignore
