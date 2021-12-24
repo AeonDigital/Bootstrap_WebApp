@@ -448,7 +448,8 @@ downloadMyShellEnvFiles() {
 
 ISOK=1
 TMP_THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-TMP_ROOT_DIR=$(echo dirname -- "${TMP_THIS_DIR}" )
+TMP_ROOT_DIR=$(dirname -- "${TMP_THIS_DIR}")
+
 if [ $# == 0 ]; then
   setIMessage "" 1
   setIMessage "${LPURPLE}Make Env BootStrap${NONE}"
@@ -474,7 +475,7 @@ if [ "$ISOK" == "1" ]; then
   if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
     TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
     tgtDir="${TMP_ROOT_DIR}/"
-    tgtURL="${TMP_URL_BASE}/"
+    tgtURL="${TMP_URL_BASE}"
     MSE_GB_TARGET_FILES=(
       "Makefile"
     )
@@ -492,7 +493,7 @@ if [ "$ISOK" == "1" ]; then
   if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
     TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
     tgtDir="${TMP_ROOT_DIR}/"
-    tgtURL="${TMP_URL_BASE}/"
+    tgtURL="${TMP_URL_BASE}"
     MSE_GB_TARGET_FILES=(
       "docker-compose.yaml"
     )
@@ -510,7 +511,7 @@ if [ "$ISOK" == "1" ]; then
   if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
     TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
     tgtDir="${TMP_ROOT_DIR}/"
-    tgtURL="${TMP_URL_BASE}/"
+    tgtURL="${TMP_URL_BASE}"
     MSE_GB_TARGET_FILES=(
       ".gitattributes"
     )
@@ -528,13 +529,31 @@ if [ "$ISOK" == "1" ]; then
   if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
     TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
     tgtDir="${TMP_ROOT_DIR}/make/"
-    tgtURL="${TMP_URL_BASE}/make/"
+    tgtURL="${TMP_URL_BASE}make/"
     MSE_GB_TARGET_FILES=(
       ".env"
     )
 
     downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
   fi;
+
+
+
+
+
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Instalando componente de update${NONE}"
+  alertUser
+
+  TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
+  tgtDir="${TMP_ROOT_DIR}/make/"
+  tgtURL="${TMP_URL_BASE}make/"
+  MSE_GB_TARGET_FILES=(
+    "updateMakeEnv.sh"
+  )
+
+  downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+
 
 
 
@@ -643,18 +662,9 @@ if [ "$ISOK" == "1" ]; then
 
 
 
-  setIMessage "" 1
-  setIMessage "${LPURPLE}Instalando componente de update${NONE}"
-  alertUser
-
-  TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
-  tgtDir="${TMP_ROOT_DIR}/"
-  tgtURL="${TMP_URL_BASE}/"
-  MSE_GB_TARGET_FILES=(
-    "Makefile"
-  )
-
-  downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
+  #
+  # Dá permissão de execução para os scripts baixados.
+  find "${TMP_ROOT_DIR}/make/*" -name "*.sh" -exec chmod u+x {} \;
 
 
   unset tgtDir
