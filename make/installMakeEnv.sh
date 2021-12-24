@@ -674,7 +674,11 @@ if [ "$ISOK" == "1" ]; then
 
   #
   # Dá permissão de execução para os scripts baixados.
-  find "${TMP_ROOT_DIR}/make/*" -name "*.sh" -exec chmod u+x {} \;
+  setIMessage "" 1
+  setIMessage "${LPURPLE}Ajustando permissões de execução:${NONE}"
+  alertUser
+  tmpPath=$(echo "${TMP_ROOT_DIR}/make" | sed 's/ /\ /g')
+  find "${tmpPath}" -name "*.sh" -exec chmod u+x {} \;
 
 
   unset tgtDir
