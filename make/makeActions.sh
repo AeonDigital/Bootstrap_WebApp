@@ -50,6 +50,17 @@ restartEnvConfig() {
       mcfSetVariable "ENVIRONMENT" "${MSE_GB_PROMPT_RESULT}" "${MK_WEB_SERVER_ENV_FILE}";
       mcfSetVariable "APACHE_RUN_USER" "${userHash}${userUID}" "${MK_WEB_SERVER_ENV_FILE}";
       mcfSetVariable "APACHE_RUN_GROUP" "${userHash}${userGID}" "${MK_WEB_SERVER_ENV_FILE}";
+
+      #
+      # Configura variáveis de acesso ao banco de dados
+      # usando os valores comuns para ambientes 'dev'
+      mcfSetVariable "DATABASE_TYPE" "mysql" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "DATABASE_HOST" "db-server" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "DATABASE_PORT" "3306" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "DATABASE_NAME" "webapp" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "DATABASE_USER" "root" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "DATABASE_PASS" "root" "${MK_WEB_SERVER_ENV_FILE}";
+      mcfSetVariable "DATABASE_CA_PATH" "" "${MK_WEB_SERVER_ENV_FILE}";
     fi;
   fi;
 }
@@ -118,7 +129,7 @@ performUnitTests() {
     if [ -z ${method+x} ]; then
       docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit "tests/src/${file}" --colors=always --verbose --debug;
     else
-      docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --filter "::${method}$$" "tests/src/${file}" --colors=always --verbose --debug;
+      docker exec -it ${CONTAINER_WEBSERVER_NAME} vendor/bin/phpunit --filter "::${method}\$" "tests/src/${file}" --colors=always --verbose --debug;
     fi;
   fi;
 }
