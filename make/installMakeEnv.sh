@@ -477,17 +477,10 @@ if [ "$ISOK" == "1" ]; then
     tgtDir="${TMP_ROOT_DIR}/"
     tgtURL="${TMP_URL_BASE}"
     MSE_GB_TARGET_FILES=(
-      "Makefile"
-    )
-
-    downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
-
-
-    TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
-    tgtDir="${TMP_ROOT_DIR}/make/"
-    tgtURL="${TMP_URL_BASE}make/"
-    MSE_GB_TARGET_FILES=(
-      "makeActions.sh"
+      "Makefile" "make/makeActions.sh" "make/makeEnvironment.sh"
+      "make/mkDocker/Makefile" "make/mkDocker/makeActions.sh"
+      "make/mkGit/Makefile" "make/mkGit/makeActions.sh"
+      "make/mkTestsAndDocumentation/Makefile" "make/mkTestsAndDocumentation/makeActions.sh"
     )
 
     downloadMyShellEnvFiles "$tgtURL" "$tgtDir"
