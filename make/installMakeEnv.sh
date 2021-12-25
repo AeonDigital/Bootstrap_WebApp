@@ -409,10 +409,17 @@ downloadMyShellEnvFiles() {
 
         local mseScript
         local mseTMP
+        local mseTGTDIR
         for mseScript in "${MSE_GB_TARGET_FILES[@]}"; do
           if [ $ISOK == 1 ]; then
             printf "${MSE_GB_ALERT_INDENT} ... ${LBLUE}${mseScript}${NONE} "
             mseTMP="${2}${mseScript}"
+
+            mseTGTDIR=$(dirname "${mseTMP}")
+            if [ ! -d "${mseTGTDIR}" ]; then
+              mkdir -p "${mseTGTDIR}"
+            fi;
+
             local mseSCode=$(curl -s -w "%{http_code}" -o "$mseTMP" "${1}${mseScript}" || true)
 
             if [ ! -f "$mseTMP" ] || [ $mseSCode != 200 ]; then
