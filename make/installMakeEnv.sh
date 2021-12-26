@@ -485,6 +485,7 @@ if [ "$ISOK" == "1" ]; then
     tgtURL="${TMP_URL_BASE}"
     MSE_GB_TARGET_FILES=(
       "Makefile" "make/makeActions.sh" "make/makeEnvironment.sh"
+      "make/mkDataBase/Makefile" "make/mkDataBase/makeActions.sh"
       "make/mkDocker/Makefile" "make/mkDocker/makeActions.sh"
       "make/mkGit/Makefile" "make/mkGit/makeActions.sh"
       "make/mkTestsAndDocumentation/Makefile" "make/mkTestsAndDocumentation/makeActions.sh"
