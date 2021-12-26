@@ -26,6 +26,8 @@ services:
       - ./container-config/apache-php-7.4/etc/php/7.4/cli/php.ini:/etc/php/7.4/cli/php.ini
       # Variáveis de ambiente
       - ./container-config/apache-php-7.4/etc/.env:/etc/.env
+      # Arquivos de dump e backup do banco de dados
+      - ./container-config/apache-php-7.4/etc/database:/etc/database
       #
       # Aplicação
       - ./src:/var/www/html

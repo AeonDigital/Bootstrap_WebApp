@@ -10,6 +10,7 @@
 #
 # Dependências
 include make/makeEnvironment.sh
+include make/mkDataBase/Makefile
 include make/mkDocker/Makefile
 include make/mkGit/Makefile
 include make/mkTestsAndDocumentation/Makefile
