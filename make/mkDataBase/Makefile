@@ -37,7 +37,7 @@ db-start:
 #
 # Exporta o backup do banco de dados da aplicação.
 db-export:
-	make/mkDataBase/makeActions.sh dataBaseExport
+	make/mkDataBase/makeActions.sh dataBaseExport "0"
 
 #
 # Executa um patch de correção ou atualização para o banco de dados.
@@ -48,3 +48,9 @@ db-export:
 # portanto você precisa informar apenas o caminho relativo até o mesmo.
 db-patch:
 	make/mkDataBase/makeActions.sh dataBaseExecutePatch "${MAKECMDGOALS}"
+
+#
+# Exporta o backup do banco de dados da aplicação e
+# substitui o atual bootstrap.
+db-bootstrap:
+	make/mkDataBase/makeActions.sh dataBaseExport "1"

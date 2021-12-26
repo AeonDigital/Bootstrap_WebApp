@@ -358,8 +358,11 @@ dataBaseStart() {
 #
 # O próprio arquivo terá um nome usando o formato em formato YYYY-MM-DD-HH-MM-SS-[databasename].zip
 #
+# @param string $1
+#       Se "0" executa as tarefas normais expostas acima.
+#       Se "1" substitui o arquivo 'bootstrap.sql' atual.
+#
 dataBaseExport() {
-  local ISOK="1";
 
   local tmpYear=$(date +"%Y");
   local tmpMonth=$(date +"%m");
@@ -372,6 +375,9 @@ dataBaseExport() {
   setIMessage "" 1;
   setIMessage "${LPURPLE}ATENÇÃO${NONE}";
   setIMessage "Uma cópia da versão atual do banco de dados ${LPURPLE}${DATABASE_NAME}${NONE} será criada.";
+  if [ "$1" == "1" ]; then
+    setIMessage "A versão atual do arquivo ${LPURPLE}bootstrap.sql${NONE} será totalmente substituída.";
+  fi;
   setIMessage "Você confirma esta ação?";
   promptUser;
 
@@ -421,7 +427,12 @@ dataBaseExport() {
           setIMessage "Execução abortada";
           alertUser;
         else
-          docker exec -it ${CONTAINER_WEBSERVER_NAME} zip "${tmpContainerDir}${tmpResultFile}.zip" "${tmpContainerDir}${tmpResultFile}.sql";
+          echo "zip ${tmpContainerDir}${tmpResultFile}.zip ${tmpContainerDir}${tmpResultFile}.sql";
+          docker exec -it ${CONTAINER_WEBSERVER_NAME} zip -j "${tmpContainerDir}${tmpResultFile}.zip" "${tmpContainerDir}${tmpResultFile}.sql";
+
+          if [ "$1" == "1" ]; then
+            docker exec -it ${CONTAINER_WEBSERVER_NAME} cp "${tmpContainerDir}${tmpResultFile}.sql" "/etc/database/bootstrap.sql";
+          fi;
 
           if [ -f "${tmpHostDir}${tmpResultFile}.zip" ]; then
             docker exec -it ${CONTAINER_WEBSERVER_NAME} rm "${tmpContainerDir}${tmpResultFile}.sql";
