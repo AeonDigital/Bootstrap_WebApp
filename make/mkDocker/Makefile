@@ -10,6 +10,7 @@
 #
 # Inicia os containers do projeto baseado no 'docker-compose'.
 up:
+	if [ ! -f "composer.lock" ]; then echo "{}" > "composer.lock"; fi;
 	docker-compose up -d
 	docker exec -it ${CONTAINER_WEBSERVER_NAME} composer install --prefer-source
 
