@@ -29,8 +29,17 @@ services:
       # Arquivos de dump e backup do banco de dados
       - ./container-config/apache-php-7.4/etc/database:/etc/database
       #
-      # Aplicação
+      # Aplicação web
       - ./src:/var/www/html
+      #
+      # Diretórios e arquivos para desenvolvimento
+      # de projetos do tipo 'biblioteca'
+      # - ./src:/var/www/html/src
+      # - ./docs:/var/www/html/docs
+      # - ./tests:/var/www/html/tests
+      # - ./vendor:/var/www/html/vendor
+      # - ./composer.json:/var/www/html/composer.json
+      # - ./composer.lock:/var/www/html/composer.lock
     ports:
       - 8080:80
 

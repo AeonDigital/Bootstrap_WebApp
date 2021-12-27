@@ -41,6 +41,17 @@ restartEnvConfig() {
     alertUser;
   else
 
+    local userName=$(whoami);
+
+    setIMessage "" 1;
+    setIMessage "Deseja associar TODOS arquivos e diretórios do projeto";
+    setIMessage "com o usuário ${LPURPLE}${userName}${NONE}?";
+    promptUser;
+
+    if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+      sudo chown -R "${userName}":"${userName}" "${MK_ROOT_PATH}"
+    fi;
+
     MSE_GB_PROMPT_LIST_OPTIONS_LABELS=("utest" "lcl" "dev" "hmg" "qa" "prd");
     MSE_GB_PROMPT_LIST_OPTIONS_VALUES=("UTEST" "LCL" "DEV" "HMG" "QA" "PRD");
 
@@ -48,31 +59,16 @@ restartEnvConfig() {
     setIMessage "Informe o tipo de ambiente no qual o projeto está sendo configurado.";
     promptUser "list";
 
-    if [ "$MSE_GB_PROMPT_RESULT" != "0" ]; then
-      local userName=$(whoami);
+    if [ "$MSE_GB_PROMPT_RESULT" != "" ]; then
       local userHash="#";
       local userUID=$(id -u ${userName});
       local userGID=$(id -g ${userName});
-
-
-      setIMessage "" 1;
-      setIMessage "Deseja associar TODOS arquivos e diretórios do projeto";
-      setIMessage "com o usuário ${LPURPLE}${userName}${NONE}?";
-      promptUser;
-
-      if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
-        sudo chown -R "${userName}":"${userName}" "${MK_ROOT_PATH}"
-      fi;
-
-
 
       cp "${MK_ROOT_PATH}/make/.env" "${MK_WEB_SERVER_ENV_FILE}";
 
       mcfSetVariable "ENVIRONMENT" "${MSE_GB_PROMPT_RESULT}" "${MK_WEB_SERVER_ENV_FILE}";
       mcfSetVariable "APACHE_RUN_USER" "${userHash}${userUID}" "${MK_WEB_SERVER_ENV_FILE}";
       mcfSetVariable "APACHE_RUN_GROUP" "${userHash}${userGID}" "${MK_WEB_SERVER_ENV_FILE}";
-
-
 
       setIMessage "" 1;
       setIMessage "Deseja configurar o acesso ao banco de dados?";
