@@ -443,6 +443,44 @@ downloadMyShellEnvFiles() {
     fi
   fi
 }
+#
+# Retorna o diretório em que o script atual está sendo executado.
+retrieveThisPath() {
+  local tmpDir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd );
+
+  # efetua tratamento para casos em que o caminho possui espaços.
+  tmpDir=$(echo $tmpDir | sed "s/ /\\ /g");
+  echo "${tmpDir}";
+}
+#
+# Retorna o diretório pai do diretório indicado.
+#
+#   @param string $1
+#   Diretório inicial cujo pai será retornado
+#
+#   @param int $2
+#   Se definido, será o número de diretórios que deverão ser removidos
+#   do caminho atual. O padrão é "1".
+#
+retrieveParentPath() {
+  local tgtPath="$1";
+
+  local nParent="1";
+  if [ $# == 2 ]; then
+    nParent="$2";
+  fi;
+
+  tgtPath=$(dirname -- "${tgtPath}" | sed "s/\\ / /g" | sed "s/ /\\ /g");
+
+  if [ "${nParent}" != "1" ]; then
+    for i in {1..$2}
+    do
+      tgtPath=$(retrieveParentPath "$tgtPath" "1");
+    done;
+  fi;
+
+  echo "${tgtPath}";
+}
 
 
 
@@ -455,8 +493,9 @@ downloadMyShellEnvFiles() {
 
 ISOK=1
 TMP_URL_BASE="https://raw.githubusercontent.com/AeonDigital/Bootstrap_WebApp/main/"
-TMP_THIS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-TMP_ROOT_DIR=$(dirname -- $(dirname -- "${TMP_THIS_DIR}"))
+TMP_THIS_DIR=$(retrieveThisPath)
+TMP_ROOT_DIR=$(retrieveParentPath "${TMP_THIS_DIR}" "2");
+
 
 
 setIMessage "" 1
