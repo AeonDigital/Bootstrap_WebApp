@@ -21,13 +21,17 @@ up-docs: up docs-config
 # Este comando precisa ser rodado apenas 1 vez para cada novo container e apenas
 # se o arquivo de configuração ainda não existir.
 docs-config:
+	make/makeActions.sh makeExecuteBefore "$@"
 	docker exec -it ${CONTAINER_WEBSERVER_NAME} mkdir -p docs;
 	docker exec -it ${CONTAINER_WEBSERVER_NAME} ./vendor/bin/phpdoc-to-rst config;
+	make/makeActions.sh makeExecuteAfter "$@"
 
 #
 # Efetua a extração da documentação técnica para o formato 'rst'.
 docs-extract:
+	make/makeActions.sh makeExecuteBefore "$@"
 	docker exec -it ${CONTAINER_WEBSERVER_NAME} ./vendor/bin/phpdoc-to-rst generate docs src --public-only
+	make/makeActions.sh makeExecuteAfter "$@"
 
 
 
@@ -46,7 +50,9 @@ docs-extract:
 # > make test file="path/to/tgtFile.php"
 # > make test file="path/to/tgtFile.php" method="tgtMethodName"
 test:
-	make/mkTestsAndDocumentation/makeActions.sh performUnitTests "${MAKECMDGOALS}"
+	make/makeActions.sh makeExecuteBefore "$@"
+	make/modules/tests/makeActions.sh performUnitTests "${MAKECMDGOALS}"
+	make/makeActions.sh makeExecuteAfter "$@"
 
 
 
@@ -69,4 +75,6 @@ test:
 # > make test-cover output="html"
 # > make test-cover file="path/to/tgtFile.php" output="html"
 test-cover:
-	make/mkTestsAndDocumentation/makeActions.sh performUnitCoverTests "${MAKECMDGOALS}"
+	make/makeActions.sh makeExecuteBefore "$@"
+	make/modules/tests/makeActions.sh performUnitCoverTests "${MAKECMDGOALS}"
+	make/makeActions.sh makeExecuteAfter "$@"

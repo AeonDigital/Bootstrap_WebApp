@@ -2,14 +2,14 @@
 
 #
 # Carrega dependencias
-source "${PWD}/make/makeTools.sh"
-source "${PWD}/make/makeEnvironment.sh"
+source "${PWD}/make/modules/makeEnvironment.sh"
+source "${MK_ROOT_PATH}/make/modules/makeTools.sh"
 source "${MK_ROOT_PATH}/make/mseStandAlone/loadScripts.sh";
 
 #
 # Se quiser,
-# defina um arquivo 'make/myMakeEnvironment.sh' e defina nele suas
-# personalizações para seu local de trabalho.
+# defina um arquivo em 'make/makeEnvironment.sh' e use-o para
+# suas configurações personalizadas.
 if [ -f "${MK_MY_ENVIRONMENT_FILE}" ]; then
   source "${MK_MY_ENVIRONMENT_FILE}"
 fi;
