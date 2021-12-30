@@ -8,19 +8,38 @@
 
 
 #
+# Executa todas as verificações definidas para o banco de dados
+db-check: db-check-ping db-check-network db-check-credentials
+
+#
+# Verifica se é possível 'pingar' o servidor do banco de dados.
+db-check-ping:
+	make/mkDataBase/makeActions.sh dataBaseCheckPing
+
+#
+# Verifica a qualidade da conexão com o banco de dados efetuando um teste
+# de 'ping' com 10 tentativas.
+db-check-network:
+	make/mkDataBase/makeActions.sh dataBaseCheckNetwork
+
+#
 # Verifica o acesso ao banco de dados da aplicação.
 db-check-credentials:
 	make/mkDataBase/makeActions.sh dataBaseCheckCredentials "1"
 
-#
-# Verifica as configurações de 'character-set' atualmente definida.
-db-check-characterset:
-	make/mkDataBase/makeActions.sh dataBaseCheckCharacterSet
+
 
 #
-# Verifica as configurações de 'collation' atualmente definida.
-db-check-collation:
-	make/mkDataBase/makeActions.sh dataBaseCheckCollation
+# Mostra as configurações de 'character-set' atualmente definida.
+db-show-characterset:
+	make/mkDataBase/makeActions.sh dataBaseShowCharacterSet
+
+#
+# Mostra as configurações de 'collation' atualmente definida.
+db-show-collation:
+	make/mkDataBase/makeActions.sh dataBaseShowCollation
+
+
 
 
 

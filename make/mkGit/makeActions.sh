@@ -2,6 +2,7 @@
 
 #
 # Carrega dependencias
+source "${PWD}/make/makeTools.sh"
 source "${PWD}/make/makeEnvironment.sh"
 source "${MK_ROOT_PATH}/make/mseStandAlone/loadScripts.sh";
 
@@ -158,6 +159,11 @@ gitTagManagement() {
     fi;
   fi;
 }
+
+
+
+
+
 
 
 

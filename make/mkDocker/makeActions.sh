@@ -2,6 +2,7 @@
 
 #
 # Carrega dependencias
+source "${PWD}/make/makeTools.sh"
 source "${PWD}/make/makeEnvironment.sh"
 source "${MK_ROOT_PATH}/make/mseStandAlone/loadScripts.sh";
 
@@ -58,6 +59,11 @@ getContainersIP() {
     docker inspect ${CONTAINER_DBSERVER_NAME} | grep -oP -m1 '(?<="IPAddress": ")[a-f0-9.:]+';
   fi;
 }
+
+
+
+
+
 
 
 

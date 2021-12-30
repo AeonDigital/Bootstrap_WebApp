@@ -2,6 +2,7 @@
 
 #
 # Carrega dependencias
+source "${PWD}/make/makeTools.sh"
 source "${PWD}/make/makeEnvironment.sh"
 source "${MK_ROOT_PATH}/make/mseStandAlone/loadScripts.sh";
 
@@ -38,12 +39,12 @@ fi;
 dataBaseExecuteCommand() {
   #
   # Resgata os dados de acesso ao banco de dados alvo.
-  local DATABASE_TYPE=$(mcfPrintVariableValue "DATABASE_TYPE" "${MK_WEB_SERVER_ENV_FILE}")
-  local DATABASE_HOST=$(mcfPrintVariableValue "DATABASE_HOST" "${MK_WEB_SERVER_ENV_FILE}")
-  local DATABASE_PORT=$(mcfPrintVariableValue "DATABASE_PORT" "${MK_WEB_SERVER_ENV_FILE}")
-  local DATABASE_NAME=$(mcfPrintVariableValue "DATABASE_NAME" "${MK_WEB_SERVER_ENV_FILE}")
-  local DATABASE_USER=$(mcfPrintVariableValue "DATABASE_USER" "${MK_WEB_SERVER_ENV_FILE}")
-  local DATABASE_PASS=$(mcfPrintVariableValue "DATABASE_PASS" "${MK_WEB_SERVER_ENV_FILE}")
+  local DATABASE_TYPE=$(mcfPrintVariableValue "DATABASE_TYPE" "${MK_WEB_SERVER_ENV_FILE}");
+  local DATABASE_HOST=$(mcfPrintVariableValue "DATABASE_HOST" "${MK_WEB_SERVER_ENV_FILE}");
+  local DATABASE_PORT=$(mcfPrintVariableValue "DATABASE_PORT" "${MK_WEB_SERVER_ENV_FILE}");
+  local DATABASE_NAME=$(mcfPrintVariableValue "DATABASE_NAME" "${MK_WEB_SERVER_ENV_FILE}");
+  local DATABASE_USER=$(mcfPrintVariableValue "DATABASE_USER" "${MK_WEB_SERVER_ENV_FILE}");
+  local DATABASE_PASS=$(mcfPrintVariableValue "DATABASE_PASS" "${MK_WEB_SERVER_ENV_FILE}");
 
   local tmpDocker=$(echo "docker exec -it ${CONTAINER_WEBSERVER_NAME}");
   local tmpConnection=$(echo "mysql --host=${DATABASE_HOST} --port=${DATABASE_PORT} --user=${DATABASE_USER} --password=${DATABASE_PASS}");
@@ -110,7 +111,6 @@ dataBaseDumpCommand() {
 
   elif [ "$1" == "import" ] || [ "$1" == "i" ]; then
     tmpConnection=$(dataBaseExecuteCommand "${2}");
-    #tmpConnection=$(echo "${tmpConnection}");
 
   elif [ "$1" == "patch" ] || [ "$1" == "p" ]; then
     tmpConnection=$(dataBaseExecuteCommand "${2}");
@@ -147,6 +147,77 @@ dataBaseExecuteInstruction() {
 
 
 
+
+
+#
+# Verifica se há comunicação com o servidor do banco de dados.
+dataBaseCheckPing() {
+  local DATABASE_HOST=$(mcfPrintVariableValue "DATABASE_HOST" "${MK_WEB_SERVER_ENV_FILE}");
+  local pingResult=$(checkServerWithPing "${DATABASE_HOST}" "1" "1");
+
+  if [ "${pingResult}" == "" ]; then
+    errorAlert ${FUNCNAME[0]} "Falha do 'ping"
+  else
+    local pingProccess=$(proccessPingStringResult "${pingResult}");
+    local arrResult=(${pingProccess//-/ });
+
+    if [ ${#arrResult[@]}  != 5 ]; then
+      errorAlert ${FUNCNAME[0]} "Falha do 'ping"
+    else
+      if [ "${arrResult[3]}" == "100" ]; then
+        setIMessage "${LPURPLE}Servidor encontrado${NONE}.";
+        alertUser;
+      else
+        setIMessage "${LPURPLE}Servidor não encontrado${NONE}.";
+        alertUser;
+
+        setIMessage "" 1;
+        setIMessage "Deseja retestar?";
+        promptUser;
+
+        if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+          dataBaseCheckPing
+        fi;
+      fi;
+    fi;
+  fi;
+}
+
+
+
+#
+# Verifica a qualidade da rede com o banco de dados efetuando um teste
+# de 'ping' com 10 tentativas.
+dataBaseCheckNetwork() {
+  setIMessage "${LPURPLE}Iniciando teste${NONE} (ping x 10)" "1";
+  alertUser;
+
+  local DATABASE_HOST=$(mcfPrintVariableValue "DATABASE_HOST" "${MK_WEB_SERVER_ENV_FILE}");
+  local pingResult=$(checkServerWithPing "${DATABASE_HOST}" "10" "1");
+
+  if [ "${pingResult}" == "" ]; then
+    errorAlert ${FUNCNAME[0]} "Falha do 'ping"
+  else
+    local pingProccess=$(proccessPingStringResult "${pingResult}");
+    local arrResult=(${pingProccess//-/ });
+
+    if [ ${#arrResult[@]}  != 5 ]; then
+      errorAlert ${FUNCNAME[0]} "Falha do 'ping"
+    else
+      setIMessage "${LPURPLE}Resultados:${NONE}" "1";
+      setIMessage "Tentativas: ${LPURPLE}${arrResult[0]}${NONE} pacotes enviados.";
+      setIMessage "            ${LPURPLE}${arrResult[1]}${NONE} pacotes recebidos.";
+      setIMessage "            ${LPURPLE}${arrResult[2]}${NONE} pacotes perdidos.";
+      setIMessage "";
+      setIMessage "Sucesso: ${LPURPLE}${arrResult[3]}%%${NONE}";
+      setIMessage "Falha  : ${LPURPLE}${arrResult[4]}%%${NONE}";
+      alertUser;
+    fi;
+  fi;
+}
+
+
+
 #
 # Verifica o acesso ao banco de dados da aplicação.
 #
@@ -166,16 +237,14 @@ dataBaseCheckCredentials() {
   local tmpResult=$(dataBaseExecuteInstruction "${tmpConn}" ";");
 
   if [ "${tmpResult}" != "" ]; then
-    setIMessage "" 1;
-    setIMessage "${LPURPLE}Falha de conexão:${NONE}";
+    setIMessage "${LPURPLE}Credenciais não aceitas${NONE}" "1";
     setIMessage "${tmpResult}";
     alertUser;
   else
     if [ "$1" != "1" ]; then
       echo "1";
     else
-      setIMessage "" 1;
-      setIMessage "${LPURPLE}Conexão bem sucedida${NONE}";
+      setIMessage "${LPURPLE}Credenciais aceitas${NONE}" "1";
       alertUser;
     fi;
   fi;
@@ -183,10 +252,12 @@ dataBaseCheckCredentials() {
 
 
 
+
+
 #
 # Expõe para o usuário o valor definido para as configuração de variáveis
 # do tipo 'character-set'
-dataBaseCheckCharacterSet() {
+dataBaseShowCharacterSet() {
   local tmpConn=$(dataBaseExecuteCommand "");
   local tmpResult=$(dataBaseExecuteInstruction "${tmpConn}" "SHOW VARIABLES LIKE '%character_set%';");
 
@@ -208,7 +279,7 @@ dataBaseCheckCharacterSet() {
 #
 # Expõe para o usuário o valor definido para as configuração de variáveis
 # do tipo 'collation'
-dataBaseCheckCollation() {
+dataBaseShowCollation() {
   local tmpConn=$(dataBaseExecuteCommand "");
   local tmpResult=$(dataBaseExecuteInstruction "${tmpConn}" "SHOW VARIABLES LIKE '%collation%';");
 
@@ -523,6 +594,7 @@ dataBaseExecutePatch() {
     fi;
   fi;
 }
+
 
 
 
