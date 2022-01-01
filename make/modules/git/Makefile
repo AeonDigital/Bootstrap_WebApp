@@ -8,6 +8,13 @@
 
 
 #
+# Configura o git para o repositório atual
+git-config-local:
+	make/makeActions.sh makeExecuteBefore "$@"
+	make/modules/git/makeActions.sh gitConfigLocal
+	make/makeActions.sh makeExecuteAfter "$@"
+
+#
 # Mostra log resumido do git
 # Use o parametro 'len' para indicar a quantidade de itens a serem mostrados.
 log:

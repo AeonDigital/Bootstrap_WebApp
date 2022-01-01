@@ -39,6 +39,99 @@ gitShowLog() {
 
 
 #
+# Configura o repositório para armazenar localmente as credenciais do git.
+gitConfigLocal() {
+  mkdir -p ~/.gitcredentials
+  chmod 700 ~/.gitcredentials
+
+
+  if [ ! -d ~/.gitcredentials ]; then
+    setIMessage "" 1;
+    setIMessage "Não foi possível criar o diretório ${PURPLE}~/.gitcredentials${NONE}.";
+    setIMessage "Ação abortada";
+    alertUser;
+  else
+      local tmpISOK="1";
+      local tmpRepo="";
+      local tmpEmail="";
+      local tmpName="";
+
+
+      if [ "${tmpISOK}" == "1" ]; then
+        setIMessage "" 1;
+        setIMessage "Informe o nome do repositório.";
+        promptUser "value";
+
+        if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
+          tmpISOK="0";
+
+          setIMessage "" 1;
+          setIMessage "O nome do repositório não pode ficar vazio.";
+          setIMessage "Ação abortada";
+          alertUser;
+        else
+          tmpRepo="$MSE_GB_PROMPT_RESULT";
+        fi;
+      fi;
+
+
+      if [ "${tmpISOK}" == "1" ]; then
+        setIMessage "" 1;
+        setIMessage "Informe o seu email.";
+        setIMessage "${PURPLE}git config --local user.email ??${NONE}";
+        promptUser "value";
+
+        if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
+          tmpISOK="0";
+
+          setIMessage "" 1;
+          setIMessage "O email não pode ficar vazio.";
+          setIMessage "Ação abortada";
+          alertUser;
+        else
+          tmpEmail="$MSE_GB_PROMPT_RESULT";
+        fi;
+      fi;
+
+
+      if [ "${tmpISOK}" == "1" ]; then
+        setIMessage "" 1;
+        setIMessage "Informe o seu nome.";
+        setIMessage "${PURPLE}git config --local user.name ??${NONE}";
+        promptUser "value";
+
+        if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
+          tmpISOK="0";
+
+          setIMessage "" 1;
+          setIMessage "O nome não pode ficar vazio.";
+          setIMessage "Ação abortada";
+          alertUser;
+        else
+          tmpName="$MSE_GB_PROMPT_RESULT";
+        fi;
+      fi;
+
+
+      if [ "${tmpISOK}" == "1" ]; then
+        git config --local user.email "${tmpEmail}"
+        git config --local user.name "${tmpName}"
+        git config --local credential.helper "store --file ~/.gitcredentials/${tmpRepo}"
+
+        setIMessage "" 1;
+        setIMessage "Configurações executadas.";
+        setIMessage "Suas credenciais serão pedidas no próximo pull/push e após serão lidas";
+        setIMessage "do arquivo de configuração armazenado em ~/.gitcredentials/${tmpRepo}";
+        alertUser;
+      fi;
+  fi;
+}
+
+
+
+
+
+#
 # Gerencia as ações de controle de tags do git para o projeto.
 gitTagManagement() {
   GIT_ACTIVE_BRANCH=$(git branch --show-current);
@@ -159,7 +252,6 @@ gitTagManagement() {
     fi;
   fi;
 }
-
 
 
 
