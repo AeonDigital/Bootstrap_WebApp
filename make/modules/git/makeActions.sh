@@ -41,89 +41,119 @@ gitShowLog() {
 #
 # Configura o repositório para armazenar localmente as credenciais do git.
 gitConfigLocal() {
-  mkdir -p ~/.gitcredentials
-  chmod 700 ~/.gitcredentials
 
-
-  if [ ! -d ~/.gitcredentials ]; then
+  if [ ! -d .git ]; then
     setIMessage "" 1;
-    setIMessage "Não foi possível criar o diretório ${PURPLE}~/.gitcredentials${NONE}.";
+    setIMessage "O diretório atual não é um repositório Git";
     setIMessage "Ação abortada";
     alertUser;
   else
-      local tmpISOK="1";
-      local tmpRepo="";
-      local tmpEmail="";
-      local tmpName="";
+    setIMessage "" 1;
+    setIMessage "Iniciando configuração ${PURPLE}local${NONE} para este repositório.";
+    setIMessage "As configurações locais atualmente definidas serão perdidas.";
+    setIMessage "Você confirma esta ação?";
+    promptUser;
+
+    if [ "$MSE_GB_PROMPT_RESULT" == "1" ]; then
+      mkdir -p ~/.gitcredentials
+      chmod 700 ~/.gitcredentials
 
 
-      if [ "${tmpISOK}" == "1" ]; then
+      if [ ! -d ~/.gitcredentials ]; then
         setIMessage "" 1;
-        setIMessage "Informe o nome do repositório.";
-        promptUser "value";
-
-        if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
-          tmpISOK="0";
-
-          setIMessage "" 1;
-          setIMessage "O nome do repositório não pode ficar vazio.";
-          setIMessage "Ação abortada";
-          alertUser;
-        else
-          tmpRepo="$MSE_GB_PROMPT_RESULT";
-        fi;
-      fi;
-
-
-      if [ "${tmpISOK}" == "1" ]; then
-        setIMessage "" 1;
-        setIMessage "Informe o seu email.";
-        setIMessage "${PURPLE}git config --local user.email ??${NONE}";
-        promptUser "value";
-
-        if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
-          tmpISOK="0";
-
-          setIMessage "" 1;
-          setIMessage "O email não pode ficar vazio.";
-          setIMessage "Ação abortada";
-          alertUser;
-        else
-          tmpEmail="$MSE_GB_PROMPT_RESULT";
-        fi;
-      fi;
-
-
-      if [ "${tmpISOK}" == "1" ]; then
-        setIMessage "" 1;
-        setIMessage "Informe o seu nome.";
-        setIMessage "${PURPLE}git config --local user.name ??${NONE}";
-        promptUser "value";
-
-        if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
-          tmpISOK="0";
-
-          setIMessage "" 1;
-          setIMessage "O nome não pode ficar vazio.";
-          setIMessage "Ação abortada";
-          alertUser;
-        else
-          tmpName="$MSE_GB_PROMPT_RESULT";
-        fi;
-      fi;
-
-
-      if [ "${tmpISOK}" == "1" ]; then
-        git config --local user.email "${tmpEmail}"
-        git config --local user.name "${tmpName}"
-        git config --local credential.helper "store --file ~/.gitcredentials/${tmpRepo}"
-
-        setIMessage "" 1;
-        setIMessage "Configurações executadas.";
-        setIMessage "Suas credenciais serão pedidas no próximo pull/push e após serão lidas";
-        setIMessage "do arquivo de configuração armazenado em ~/.gitcredentials/${tmpRepo}";
+        setIMessage "Não foi possível criar o diretório ${PURPLE}~/.gitcredentials${NONE}.";
+        setIMessage "Ação abortada";
         alertUser;
+      else
+          local tmpISOK="1";
+          local tmpRepo="${PWD##*/}";
+          local tmpEmail=$(git config --global --get user.email);
+          local tmpName=$(git config --global --get user.name);
+
+          setIMessage "" 1;
+          setIMessage "Você deseja usar as configurações padrões?";
+          setIMessage "Repositório: ${PURPLE}${tmpRepo}${NONE}";
+          setIMessage "Email      : ${PURPLE}${tmpEmail}${NONE}";
+          setIMessage "Nome       : ${PURPLE}${tmpName}${NONE}";
+          setIMessage "";
+          setIMessage "Se escolher 'não' você poderá definir cada um dos itens acima.";
+          promptUser;
+
+          if [ "$MSE_GB_PROMPT_RESULT" == "0" ]; then
+            if [ "${tmpISOK}" == "1" ]; then
+              setIMessage "" 1;
+              setIMessage "Informe o nome do ${PURPLE}repositório${NONE}.";
+              promptUser "value";
+
+              if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
+                tmpISOK="0";
+
+                setIMessage "" 1;
+                setIMessage "Este valor não pode ficar vazio.";
+                setIMessage "Ação abortada";
+                alertUser;
+              else
+                tmpRepo="$MSE_GB_PROMPT_RESULT";
+              fi;
+            fi;
+
+
+            if [ "${tmpISOK}" == "1" ]; then
+              setIMessage "" 1;
+              setIMessage "Informe o ${PURPLE}email${NONE}.";
+              setIMessage "${PURPLE}git config --local user.email ??${NONE}";
+              promptUser "value";
+
+              if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
+                tmpISOK="0";
+
+                setIMessage "" 1;
+                setIMessage "Este valor não pode ficar vazio.";
+                setIMessage "Ação abortada";
+                alertUser;
+              else
+                tmpEmail="$MSE_GB_PROMPT_RESULT";
+              fi;
+            fi;
+
+
+            if [ "${tmpISOK}" == "1" ]; then
+              setIMessage "" 1;
+              setIMessage "Informe o ${PURPLE}nome${NONE}.";
+              setIMessage "${PURPLE}git config --local user.name ??${NONE}";
+              promptUser "value";
+
+              if [ "$MSE_GB_PROMPT_RESULT" == "" ]; then
+                tmpISOK="0";
+
+                setIMessage "" 1;
+                setIMessage "Este valor não pode ficar vazio.";
+                setIMessage "Ação abortada";
+                alertUser;
+              else
+                tmpName="$MSE_GB_PROMPT_RESULT";
+              fi;
+            fi;
+          fi;
+
+
+          if [ "${tmpISOK}" == "1" ]; then
+            git config --local user.email "${tmpEmail}"
+            git config --local user.name "${tmpName}"
+            git config --local credential.helper "store --file ~/.gitcredentials/${tmpRepo}"
+
+            rm -f "~/.gitcredentials/${tmpRepo}";
+
+            setIMessage "" 1;
+            setIMessage "Configurações executadas.";
+            setIMessage "Suas credenciais serão pedidas no próximo pull/push e após serão lidas";
+            setIMessage "do arquivo de configuração armazenado em ~/.gitcredentials/${tmpRepo}";
+            alertUser;
+          fi;
       fi;
+
+    fi;
+
   fi;
 }
 
