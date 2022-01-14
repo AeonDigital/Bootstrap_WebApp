@@ -51,7 +51,7 @@ dataBaseExecuteCommand() {
 
   if [ "$1" == "" ]; then
     tmpConnection=$(echo "${tmpConnection} --execute=");
-  elif [ "$1" == "1" ]; then
+  elif [ "$1" == "1" ] || [ "$1" == "\"\"" ]; then
     tmpConnection=$(echo "${tmpConnection} --database=${DATABASE_NAME} --execute=");
   else
     tmpConnection=$(echo "${tmpConnection} --database=${1} --execute=");
