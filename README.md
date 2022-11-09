@@ -5,17 +5,17 @@ Bootstrap_WebApp
 >
 > rianna@aeondigital.com.br
 
-
+&nbsp;
 
 Provê uma base inicial para novas aplicações web.
 
 
 &nbsp;
+&nbsp;
 
-________________________________________________________________________________________________________________________
 
-
+_______________________________________________________________________________
 
 ## Licença
 
-Para este projeto foi usada a [Licença MIT](LICENCE.md).
+Este software está licenciado sob a [MIT](LICENSE).
