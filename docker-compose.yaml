@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 
 
@@ -42,6 +42,7 @@ services:
       # - ./composer.lock:/var/www/html/composer.lock
     ports:
       - 8080:80
+    command: bash -c 'composer install --prefer-source --working-dir="/var/www/html" || /cmd.sh'
 
   #
   # Servidor de banco de dados
